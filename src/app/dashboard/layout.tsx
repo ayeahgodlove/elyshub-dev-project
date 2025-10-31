@@ -1,15 +1,13 @@
-"use client";
-import { AppSidebar } from "@/components/app-sidebar.component";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+// layout.tsx
 import React from "react";
+import { AppSidebar } from "@/components/app-sidebar.component";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
 export default async function Layout({ children }: React.PropsWithChildren) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
+      {children}
     </SidebarProvider>
   );
 }
