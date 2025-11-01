@@ -1,8 +1,7 @@
 "use client";
 
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { APPOINTMENTS } from "@/data/appointment.data";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { appointments } from "@/data/appointment.data";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight, ListFilter, Plus, Calendar as CalendarIcon, Divide, List, Search } from "lucide-react";
@@ -19,7 +18,7 @@ export function DashboardCalendar() {
     "week"
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const filteredAppointments = APPOINTMENTS.filter(
+  const filteredAppointments = appointments.filter(
     (apt) =>
       apt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       apt.participants.includes(searchQuery)

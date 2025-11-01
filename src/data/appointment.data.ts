@@ -1,6 +1,6 @@
-import { Appointment } from "@/types/appointment.type";
+import { IAppointment } from "@/models/appointment.model";
 
-export const APPOINTMENTS: Appointment[] = [
+export const appointments: IAppointment[] = [
   {
     id: "1",
     title: "Hilary Wilton x John",
@@ -11,6 +11,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 11,
     location: "Cottage Medicares H...",
     color: "bg-blue-100 border-l-4 border-blue-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Regular team sync meeting",
   },
   {
     id: "2",
@@ -22,6 +25,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 13,
     location: "Cottage Medicares H...",
     color: "bg-green-100 border-l-4 border-green-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Project discussion",
   },
   {
     id: "3",
@@ -33,6 +39,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 10,
     location: "Cottage Medicares H...",
     color: "bg-green-100 border-l-4 border-green-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Morning standup",
   },
   {
     id: "4",
@@ -44,17 +53,23 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 11,
     location: "Cottage Medicares H...",
     color: "bg-orange-100 border-l-4 border-orange-400",
+    type: "consultation",
+    status: "scheduled",
+    description: "Client consultation session",
   },
   {
     id: "5",
     title: "Hilary Wilton x John",
     participants: "2",
-    time: "11am - 12pm",
+    time: "3pm - 4pm",
     duration: 1,
     day: 2,
     startHour: 15,
     location: "Cottage Medicares H...",
     color: "bg-orange-100 border-l-4 border-orange-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Follow-up meeting",
   },
   {
     id: "6",
@@ -66,6 +81,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 13,
     location: "Cottage Medicares H...",
     color: "bg-blue-100 border-l-4 border-blue-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Weekly review",
   },
   {
     id: "7",
@@ -77,6 +95,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 15,
     location: "Cottage Medicares H...",
     color: "bg-blue-100 border-l-4 border-blue-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Planning session",
   },
   {
     id: "8",
@@ -88,6 +109,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 13,
     location: "Cottage Medicares H...",
     color: "bg-pink-100 border-l-4 border-pink-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Team building activity",
   },
   {
     id: "9",
@@ -99,6 +123,9 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 13,
     location: "Cottage Medicares H...",
     color: "bg-purple-100 border-l-4 border-purple-400",
+    type: "consultation",
+    status: "scheduled",
+    description: "Expert consultation",
   },
   {
     id: "10",
@@ -110,5 +137,8 @@ export const APPOINTMENTS: Appointment[] = [
     startHour: 11,
     location: "Cottage Medicares H...",
     color: "bg-blue-100 border-l-4 border-blue-400",
+    type: "meeting",
+    status: "scheduled",
+    description: "Weekend prep meeting",
   },
 ];

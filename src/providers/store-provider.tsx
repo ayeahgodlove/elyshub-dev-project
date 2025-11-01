@@ -1,16 +1,10 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { useEmployeeStore, useUIStore, useAuthStore } from '@/store';
+import { store } from '@/store/store';
+import { Provider } from 'react-redux'
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-    const initialized = useRef(false);
-
-    useEffect(() => {
-        if (!initialized.current) {
-            initialized.current = true;
-        }
-    }, []);
-
-    return <>{children}</>;
+    return <Provider store={store}>
+        {children}
+    </Provider>;
 }

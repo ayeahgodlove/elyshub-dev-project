@@ -1,6 +1,6 @@
-import { Employee } from "@/types/employee.type";
+import { IEmployee } from "@/models/employee.model";
 
-export const employees: Employee[] = [
+export const employees: IEmployee[] = [
   {
     id: "#28373",
     name: "Olamide Akintan",
@@ -9,6 +9,12 @@ export const employees: Employee[] = [
     reportTo: "Roxanne Justina",
     avatar:
       "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 802 345 6789",
+    department: "Sales",
+    position: "Sales Representative",
+    status: "active",
+    joinedDate: "2023-01-15",
+    salary: 45000,
   },
   {
     id: "#32876",
@@ -18,6 +24,12 @@ export const employees: Employee[] = [
     reportTo: "Victor Black",
     avatar:
       "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 803 456 7890",
+    department: "Marketing",
+    position: "Marketing Coordinator",
+    status: "active",
+    joinedDate: "2023-02-20",
+    salary: 50000,
   },
   {
     id: "#11394",
@@ -27,6 +39,12 @@ export const employees: Employee[] = [
     reportTo: "Amaree Savil",
     avatar:
       "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 804 567 8901",
+    department: "HR",
+    position: "HR Manager",
+    status: "active",
+    joinedDate: "2023-03-10",
+    salary: 65000,
   },
   {
     id: "#99822",
@@ -36,6 +54,12 @@ export const employees: Employee[] = [
     reportTo: "Wilson Qlilex",
     avatar:
       "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 805 678 9012",
+    department: "Finance",
+    position: "Financial Analyst",
+    status: "active",
+    joinedDate: "2023-04-05",
+    salary: 55000,
   },
   {
     id: "#11873",
@@ -45,6 +69,12 @@ export const employees: Employee[] = [
     reportTo: "Roxanne Justina",
     avatar:
       "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 806 789 0123",
+    department: "Sales",
+    position: "Senior Sales Executive",
+    status: "active",
+    joinedDate: "2023-05-12",
+    salary: 60000,
   },
   {
     id: "#33644",
@@ -54,6 +84,12 @@ export const employees: Employee[] = [
     reportTo: "Danielle Maxel",
     avatar:
       "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 807 890 1234",
+    department: "Operations",
+    position: "Operations Manager",
+    status: "on-leave",
+    joinedDate: "2023-06-18",
+    salary: 70000,
   },
   {
     id: "#00297",
@@ -63,6 +99,12 @@ export const employees: Employee[] = [
     reportTo: "Alexis Terence",
     avatar:
       "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 808 901 2345",
+    department: "IT",
+    position: "Software Developer",
+    status: "active",
+    joinedDate: "2023-07-22",
+    salary: 75000,
   },
   {
     id: "#00298",
@@ -72,6 +114,12 @@ export const employees: Employee[] = [
     reportTo: "Zahill Christian",
     avatar:
       "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 809 012 3456",
+    department: "Support",
+    position: "Customer Support Lead",
+    status: "active",
+    joinedDate: "2023-08-30",
+    salary: 52000,
   },
   {
     id: "#00299",
@@ -81,5 +129,11 @@ export const employees: Employee[] = [
     reportTo: "Marcus Johnson",
     avatar:
       "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=400",
+    phone: "+234 810 123 4567",
+    department: "Sales",
+    position: "Sales Associate",
+    status: "active",
+    joinedDate: "2023-09-14",
+    salary: 42000,
   },
 ];

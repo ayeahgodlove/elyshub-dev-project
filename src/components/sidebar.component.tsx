@@ -100,7 +100,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Welcome/Tutorial Section */}
-        <SidebarFooter className="p-6">
+        <SidebarFooter className="p-4">
           <Card className="bg-blue-950 border-0">
             <CardContent className="p-4 space-y-3">
               <img

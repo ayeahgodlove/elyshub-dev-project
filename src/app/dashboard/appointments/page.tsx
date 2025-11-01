@@ -1,4 +1,4 @@
-import { DashboardCalendar } from "@/components/dashboard-calendar.component";
+import { DashboardCalendar } from "@/components/calendar.component";
 import { PageLayout } from "@/components/layout/page-layout.component";
 import { Calendar } from "lucide-react";
 
