@@ -5,7 +5,7 @@ import React from "react";
 
 export default function IndexPage() {
   return (
-    <PageLayout pageTitle="Employees" pageIcon={<Users className="w-5 h-5 text-foreground" />}>
+    <PageLayout pageTitle="Employees" pageIcon={<Users className="w-4 h-4 text-foreground" />}>
       <EmployeeTable />
     </PageLayout>
 

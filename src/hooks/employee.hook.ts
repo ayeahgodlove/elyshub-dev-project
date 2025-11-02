@@ -3,6 +3,9 @@ import { UpdateMode } from "@/models/update-mode.enum";
 import {
   setEmployee,
   setEmployeeUpdateMode,
+  addEmployee as addEmployeeAction,
+  updateEmployee as updateEmployeeAction,
+  deleteEmployee as deleteEmployeeAction,
 } from "@/store/slice/employee.slice";
 import { RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,9 +33,13 @@ export const useEmployee = () => {
     dispatch(setEmployeeUpdateMode(updateMode));
   };
 
-  const addEmployee = async (employee: IEmployee) => {};
+  const addEmployee = async (employeeData: IEmployee) => {
+    dispatch(addEmployeeAction(employeeData));
+  };
 
-  const editEmployee = async (employee: IEmployee) => {};
+  const editEmployee = async (employeeData: IEmployee) => {
+    dispatch(updateEmployeeAction(employeeData));
+  };
 
   return {
     employees,

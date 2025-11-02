@@ -3,6 +3,8 @@ import { UpdateMode } from "@/models/update-mode.enum";
 import {
   setAppointment,
   setAppointmentUpdateMode,
+  addAppointment as addAppointmentAction,
+  updateAppointment as updateAppointmentAction,
 } from "@/store/slice/appointment.slice";
 import { RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,9 +32,13 @@ export const useAppointment = () => {
     dispatch(setAppointmentUpdateMode(updateMode));
   };
 
-  const addAppointment = async (appointment: IAppointment) => {};
+  const addAppointment = async (appointmentData: IAppointment) => {
+    dispatch(addAppointmentAction(appointmentData));
+  };
 
-  const editAppointment = async (appointment: IAppointment) => {};
+  const editAppointment = async (appointmentData: IAppointment) => {
+    dispatch(updateAppointmentAction(appointmentData));
+  };
 
   return {
     appointments,

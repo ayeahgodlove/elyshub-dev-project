@@ -3,7 +3,7 @@ import { LayoutDashboard } from "lucide-react";
 
 export default function IndexPage() {
   return (
-    <PageLayout pageTitle="Dashboard" pageIcon={<LayoutDashboard className="w-5 h-5 text-foreground" />}>
+    <PageLayout pageTitle="Dashboard" pageIcon={<LayoutDashboard className="w-4 h-4 text-foreground" />}>
       <h1>Dashboard Component</h1>
     </PageLayout>
 

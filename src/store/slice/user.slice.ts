@@ -4,7 +4,7 @@ import { emptyUser, IUser, IUserState } from "@/models/user.model";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: IUserState = {
-  users: users,
+  users,
   currentUser: emptyUser,
   user: emptyUser,
   isAuthenticated: false,
@@ -17,18 +17,18 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     addUser: (state, action: PayloadAction<IUser>) => {
-      state.users.push(action.payload);
+      state.users = [...state.users, action.payload];
+      state.updateMode = UpdateMode.ADD;
     },
     updateUser: (state, action: PayloadAction<IUser>) => {
-      const index = state.users.findIndex(
-        (user) => user.id === action.payload.id
-      );
-      if (index !== -1) {
-        state.users[index] = action.payload;
-      }
+      state.users = state.users.map((user) => {
+        return user.id === action.payload.id ? action.payload : user;
+      });
+      state.updateMode = UpdateMode.EDIT;
     },
     deleteUser: (state, action: PayloadAction<string>) => {
       state.users = state.users.filter((user) => user.id !== action.payload);
+      state.updateMode = UpdateMode.DELETE;
     },
     setCurrentUser: (state, action: PayloadAction<IUser>) => {
       state.currentUser = action.payload;

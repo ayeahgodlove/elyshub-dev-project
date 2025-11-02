@@ -5,7 +5,7 @@ import { Calendar } from "lucide-react";
 export default function IndexPage() {
 
   return (
-    <PageLayout pageTitle="Appointments" pageIcon={<Calendar className="w-5 h-5 text-foreground" />}>
+    <PageLayout pageTitle="Appointments" pageIcon={<Calendar className="w-4 h-4 text-foreground" />}>
       <DashboardCalendar />
     </PageLayout>
   );

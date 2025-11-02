@@ -1,54 +1,83 @@
 "use client";
-import React, { useState } from "react";
-import { Search, Plus, Download, MoreVertical, Calendar, ListFilter } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Search, Plus, Download, Calendar, ListFilter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { employees } from "@/data/employee.data";
-import { Checkbox } from "./ui/checkbox";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Label } from "./ui/label";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { useEmployeeColumn } from "./employees/employee-column.component";
+import { Badge } from "./ui/badge";
+import { useEmployee } from "@/hooks/employee.hook";
+import { EmployeeForm } from "@/components/employees/employee-form.component";
+import { UpdateMode } from "@/models/update-mode.enum";
 
 export function EmployeeTable() {
   const [filterName, setFilterName] = React.useState("");
   const [filterReportTo, setFilterReportTo] = React.useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [isEmployeeFormOpen, setIsEmployeeFormOpen] = useState(false);
+  const { employeeColumns } = useEmployeeColumn();
+  const { employees, setUpdateMode } = useEmployee();
+  // Filter employees
+  const filteredEmployees = useMemo(() => {
+    return employees.filter((employee) => {
+      const matchesName =
+        !filterName ||
+        employee.name.toLowerCase().includes(filterName.toLowerCase()) ||
+        employee.email.toLowerCase().includes(filterName.toLowerCase());
 
-  const filteredEmployees = employees.filter((employee) => {
-    const matchesName =
-      !filterName ||
-      employee.name.toLowerCase().includes(filterName.toLowerCase()) ||
-      employee.email.toLowerCase().includes(filterName.toLowerCase());
+      const matchesReportTo =
+        !filterReportTo ||
+        filterReportTo === "all" ||
+        employee.reportTo === filterReportTo;
 
-    const matchesReportTo =
-      !filterReportTo || filterReportTo === "all" || employee.reportTo === filterReportTo;
+      return matchesName && matchesReportTo;
+    });
+  }, [filterName, filterReportTo]);
 
-    return matchesName && matchesReportTo;
+
+  // Initialize table
+  const table = useReactTable({
+    data: filteredEmployees,
+    columns: employeeColumns,
+    getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: (updaterOrValue) => {
+      const newSelection =
+        typeof updaterOrValue === "function"
+          ? updaterOrValue(
+            Object.fromEntries(
+              selectedEmployees.map((id) => [
+                filteredEmployees.findIndex((emp) => emp.id === id),
+                true,
+              ])
+            )
+          )
+          : updaterOrValue;
+
+      const selectedIds = Object.keys(newSelection)
+        .filter((key) => newSelection[key])
+        .map((index) => filteredEmployees[parseInt(index)].id);
+
+      setSelectedEmployees(selectedIds);
+    },
+    state: {
+      rowSelection: Object.fromEntries(
+        selectedEmployees
+          .map((id) => filteredEmployees.findIndex((emp) => emp.id === id))
+          .filter((index) => index !== -1)
+          .map((index) => [index, true])
+      ),
+    },
   });
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedEmployees(filteredEmployees.map((emp) => emp.id));
-    } else {
-      setSelectedEmployees([]);
-    }
-  };
-
-  const handleSelectEmployee = (employeeId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedEmployees((prev) => [...prev, employeeId]);
-    } else {
-      setSelectedEmployees((prev) => prev.filter((id) => id !== employeeId));
-    }
-  };
 
   const handleExportCSV = () => {
     const headers = ["Name", "ID", "Email", "Category", "Report to"];
@@ -73,24 +102,29 @@ export function EmployeeTable() {
     link.click();
   };
 
-  const isAllSelected =
-    filteredEmployees.length > 0 &&
-    selectedEmployees.length === filteredEmployees.length;
-  const isIndeterminate =
-    selectedEmployees.length > 0 &&
-    selectedEmployees.length < filteredEmployees.length;
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm("");
+    setFilterName("");
+    setFilterReportTo("all");
+  };
+
+  // Get unique managers for filter dropdown
+  const uniqueManagers = useMemo(() => {
+    return [...new Set(employees.map((e) => e.reportTo))];
+  }, []);
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
-        <div>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+        <div className="w-full lg:w-auto">
           <h1 className="text-2xl font-semibold text-gray-900">Employee</h1>
           <p className="text-sm text-gray-500 mt-1">
             Manage your team members and their account permissions here.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
           <Button
             variant="outline"
             className="flex items-center gap-2"
@@ -99,7 +133,13 @@ export function EmployeeTable() {
             <Download className="w-4 h-4" />
             Export CSV
           </Button>
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 rounded-lg">
+          <Button
+            onClick={() => {
+              setUpdateMode(UpdateMode.NONE);
+              setIsEmployeeFormOpen(true);
+            }}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 rounded-lg"
+          >
             <Plus className="w-4 h-4" />
             Add Employee
           </Button>
@@ -108,22 +148,28 @@ export function EmployeeTable() {
 
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Search field and Filter button */}
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="relative flex-1 md:flex-initial">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Search"
+                  placeholder="Search by name, email, or ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-80"
+                  className="pl-10 w-full md:w-80"
                 />
               </div>
+
+              {/* Filter button - visible on desktop only */}
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="hidden md:flex items-center shrink-0">
                     <ListFilter className="w-4 h-4 mr-2" />
                     Filters
+                    {(filterName || filterReportTo !== "all") && (
+                      <span className="ml-1 rounded-full bg-primary w-2 h-2"></span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64" align="end">
@@ -132,7 +178,7 @@ export function EmployeeTable() {
                       <Label htmlFor="name">Name</Label>
                       <Input
                         id="name"
-                        placeholder="Search by name..."
+                        placeholder="Filter by name..."
                         value={filterName}
                         onChange={(e) => setFilterName(e.target.value)}
                       />
@@ -148,8 +194,8 @@ export function EmployeeTable() {
                           <SelectValue placeholder="All Managers" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">All</SelectItem>
-                          {[...new Set(filteredEmployees.map((e) => e.reportTo))].map((manager) => (
+                          <SelectItem value="all">All Managers</SelectItem>
+                          {uniqueManagers.map((manager) => (
                             <SelectItem key={manager} value={manager}>
                               {manager}
                             </SelectItem>
@@ -157,13 +203,84 @@ export function EmployeeTable() {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {(filterName || filterReportTo !== "all") && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearFilters}
+                        className="w-full"
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
                   </div>
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="flex items-end gap-3">
+
+            {/* Filter button and Date selector - Mobile/Desktop */}
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              {/* Filter button - visible on mobile only */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex md:hidden items-center shrink-0">
+                    <ListFilter className="w-4 h-4 mr-2" />
+                    Filters
+                    {(filterName || filterReportTo !== "all") && (
+                      <span className="ml-1 rounded-full bg-primary w-2 h-2"></span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64" align="end">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name-mobile">Name</Label>
+                      <Input
+                        id="name-mobile"
+                        placeholder="Filter by name..."
+                        value={filterName}
+                        onChange={(e) => setFilterName(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Report To</Label>
+                      <Select
+                        onValueChange={(value) => setFilterReportTo(value)}
+                        value={filterReportTo}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="All Managers" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Managers</SelectItem>
+                          {uniqueManagers.map((manager) => (
+                            <SelectItem key={manager} value={manager}>
+                              {manager}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {(filterName || filterReportTo !== "all") && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearFilters}
+                        className="w-full"
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Date selector */}
               <Select>
-                <SelectTrigger className="w-[140px] ml-auto">
+                <SelectTrigger className="w-full md:w-[140px]">
                   <div className="flex items-center gap-2 text-blue-950">
                     <Calendar size={15} />
                     <SelectValue placeholder="Select dates" />
@@ -179,119 +296,128 @@ export function EmployeeTable() {
               </Select>
             </div>
           </div>
+
+          {/* Active Filters Display */}
+          {(searchTerm || filterName || filterReportTo !== "all") && (
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <span className="text-sm text-gray-600">Active filters:</span>
+              {searchTerm && (
+                <Badge variant="secondary" className="gap-1">
+                  Search: {searchTerm}
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="ml-1 hover:text-red-600"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              )}
+              {filterName && (
+                <Badge variant="secondary" className="gap-1">
+                  Name: {filterName}
+                  <button
+                    onClick={() => setFilterName("")}
+                    className="ml-1 hover:text-red-600"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              )}
+              {filterReportTo !== "all" && (
+                <Badge variant="secondary" className="gap-1">
+                  Report To: {filterReportTo}
+                  <button
+                    onClick={() => setFilterReportTo("all")}
+                    className="ml-1 hover:text-red-600"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="h-6 text-xs"
+              >
+                Clear all
+              </Button>
+            </div>
+          )}
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="w-12 px-4 py-3 text-left">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={handleSelectAll}
-                    className={
-                      isIndeterminate
-                        ? "data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground"
-                        : ""
-                    }
-                  />
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Report to
-                </th>
-                <th className="w-12 px-4 py-3"></th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredEmployees.map((employee) => (
-                <tr key={employee.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4">
-                    <Checkbox
-                      checked={selectedEmployees.includes(employee.id)}
-                      onCheckedChange={(checked) =>
-                        handleSelectEmployee(employee.id, checked as boolean)
-                      }
-                    />
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center">
-                      <img
-                        className="h-10 w-10 rounded-full object-cover"
-                        src={employee.avatar}
-                        alt={employee.name}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = `https://dummyimage.com/40x40/e5e5e5/666666?text=${employee.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}`;
-                        }}
-                      />
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {employee.name}
-                        </div>
-                        {/* <div className="text-sm text-gray-500">
-                          {employee.email}
-                        </div> */}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-sm text-gray-500">
-                      {employee.id}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-sm text-gray-500">
-                      {employee.email}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <Badge
-                      variant="secondary"
-                      className="bg-red-100 text-red-800"
+        {/* Responsive Table Container */}
+        <div className="overflow-hidden rounded-md border">
+          <div className="overflow-x-auto">
+            <Table >
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead
+                          key={header.id}
+                          className={
+                            header.id === "email"
+                              ? "hidden md:table-cell"
+                              : ""
+                          }
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-gray-50"
                     >
-                      {employee.category}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">
-                    {employee.reportTo}
-                  </td>
-                  <td className="px-4 py-4">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className={
+                            cell.column.id === "email"
+                              ? "hidden md:table-cell"
+                              : cell.column.id === "select"
+                                ? "w-12"
+                                : cell.column.id === "actions"
+                                  ? "w-12"
+                                  : ""
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={employeeColumns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-
         <div className="px-4 py-3 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">
@@ -316,6 +442,12 @@ export function EmployeeTable() {
           </div>
         </div>
       </div>
+
+      {/* Employee Form Modal */}
+      <EmployeeForm
+        open={isEmployeeFormOpen}
+        onOpenChange={setIsEmployeeFormOpen}
+      />
     </div>
   );
 }

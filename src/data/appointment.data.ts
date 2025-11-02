@@ -4,7 +4,7 @@ export const appointments: IAppointment[] = [
   {
     id: "1",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#28373","#32876"],
     time: "11am - 12pm",
     duration: 1,
     day: 0,
@@ -18,7 +18,7 @@ export const appointments: IAppointment[] = [
   {
     id: "2",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#11394","#99822"],
     time: "1pm - 2pm",
     duration: 1,
     day: 1,
@@ -32,7 +32,7 @@ export const appointments: IAppointment[] = [
   {
     id: "3",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#11873","#33644"],
     time: "10am - 11am",
     duration: 1,
     day: 1,
@@ -46,7 +46,7 @@ export const appointments: IAppointment[] = [
   {
     id: "4",
     title: "Consultation Call",
-    participants: "2",
+    participants: ["#00297","#00298"],
     time: "11am - 12pm",
     duration: 1,
     day: 2,
@@ -60,7 +60,7 @@ export const appointments: IAppointment[] = [
   {
     id: "5",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#00299"],
     time: "3pm - 4pm",
     duration: 1,
     day: 2,
@@ -74,7 +74,7 @@ export const appointments: IAppointment[] = [
   {
     id: "6",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#00299","#00298"],
     time: "1pm - 2pm",
     duration: 1,
     day: 3,
@@ -88,7 +88,7 @@ export const appointments: IAppointment[] = [
   {
     id: "7",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#00298","#00297"],
     time: "3pm - 4pm",
     duration: 1,
     day: 3,
@@ -102,7 +102,7 @@ export const appointments: IAppointment[] = [
   {
     id: "8",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#00297","#33644"],
     time: "1pm - 2pm",
     duration: 1,
     day: 4,
@@ -116,7 +116,7 @@ export const appointments: IAppointment[] = [
   {
     id: "9",
     title: "Consultation Call",
-    participants: "2",
+    participants: ["#11873","#99822"],
     time: "1pm - 2pm",
     duration: 1,
     day: 5,
@@ -130,7 +130,7 @@ export const appointments: IAppointment[] = [
   {
     id: "10",
     title: "Hilary Wilton x John",
-    participants: "2",
+    participants: ["#11394","#32876"],
     time: "11am - 12pm",
     duration: 1,
     day: 6,

@@ -3,7 +3,7 @@ import { IBaseState } from "./base-state.model";
 export interface IAppointment {
   id: string;
   title: string;
-  participants: string;
+  participants: string[];
   time: string;
   duration: number;
   day: number;
@@ -25,7 +25,7 @@ export interface IAppointmentState extends IBaseState {
 export const emptyAppointment: IAppointment = {
   id: "",
   title: "",
-  participants: "",
+  participants: [""],
   time: "",
   duration: 0,
   day: 0,

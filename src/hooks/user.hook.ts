@@ -25,9 +25,13 @@ export const useUser = () => {
     dispatch(setUser(user));
   };
 
-  const addUser = async (user: IUser) => {};
+  const addUser = async (_userData: IUser) => {
+    // TODO: Implement add user
+  };
 
-  const editUser = async (user: IUser) => {};
+  const editUser = async (_userData: IUser) => {
+    // TODO: Implement edit user
+  };
 
   return {
     users,

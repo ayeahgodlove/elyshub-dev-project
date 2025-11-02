@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AvatarComponent } from "./avatar.component";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { SidebarTrigger } from "./ui/sidebar";
 
 interface HeaderProps {
   title: string;
@@ -21,14 +21,17 @@ export const Header: React.FC<HeaderProps> = ({ title, icon }) => {
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
+          <div className="lg:hidden">
+            <SidebarTrigger className="w-10 h-10" />
+          </div>
+          <div className="hidden lg:flex items-center space-x-2 ">
             {icon}
             <span className="text-lg font-medium text-gray-900">{title}</span>
           </div>
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="relative">
+          <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
