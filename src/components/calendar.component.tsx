@@ -254,7 +254,6 @@ export function DashboardCalendar() {
           isToday: date.getDate() === 15 && date.getMonth() === 6,
         }));
       default:
-        // For month and year views, default to week for now
         return weekDates.map((date, idx) => ({
           date: date.getDate(),
           dayName: DAYS[idx],

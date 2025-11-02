@@ -20,14 +20,10 @@ export const useUser = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const addUser = async (_userData: IUser) => {
-    // TODO: Implement add user
-  };
+  const addUser = async (_userData: IUser) => {};
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const editUser = async (_userData: IUser) => {
-    // TODO: Implement edit user
-  };
+  const editUser = async (_userData: IUser) => {};
 
   return {
     users,
