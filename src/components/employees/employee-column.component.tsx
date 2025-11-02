@@ -5,7 +5,18 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { IEmployee } from "@/models/employee.model";
 import { MoreVertical } from "lucide-react";
 import {
@@ -13,8 +24,33 @@ import {
 } from "@tanstack/react-table";
 import { Checkbox } from '../ui/checkbox';
 import { Button } from '../ui/button';
+import { useEmployee } from "@/hooks/employee.hook";
+import { UpdateMode } from "@/models/update-mode.enum";
+import { toast } from "sonner";
 
-export const useEmployeeColumn = () => {
+interface UseEmployeeColumnProps {
+  onEdit: (employee: IEmployee) => void;
+  onView: (employee: IEmployee) => void;
+}
+
+export const useEmployeeColumn = ({ onEdit, onView }: UseEmployeeColumnProps) => {
+  const { deleteEmployee } = useEmployee();
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = React.useState<IEmployee | null>(null);
+
+  const handleDeleteClick = (employee: IEmployee) => {
+    setEmployeeToDelete(employee);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (employeeToDelete) {
+      deleteEmployee(employeeToDelete.id);
+      toast.success("Employee deleted successfully!");
+      setDeleteDialogOpen(false);
+      setEmployeeToDelete(null);
+    }
+  };
 
     // Define columns
     const columns: ColumnDef<IEmployee>[] = useMemo(
@@ -102,26 +138,55 @@ export const useEmployeeColumn = () => {
             {
                 id: "actions",
                 cell: ({ row }) => (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="icon" className="h-8 w-8">
-                                <MoreVertical className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => console.log("row: ", row)}>
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => console.log("row: ", row)}>
-                                View details</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="icon" className="h-8 w-8">
+                                    <MoreVertical className="h-4 w-4" />
+                                    <span className="sr-only">Open menu</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => onEdit(row.original)}>
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => onView(row.original)}>
+                                    View details
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() => handleDeleteClick(row.original)}
+                                    className="text-red-600"
+                                >
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently
+                                        delete {employeeToDelete?.name || "this employee"}.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleConfirmDelete}
+                                        className="bg-red-600 hover:bg-red-700"
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </>
                 ),
             },
         ],
-        []
+        [onEdit, onView]
     );
     return {
         employeeColumns: columns

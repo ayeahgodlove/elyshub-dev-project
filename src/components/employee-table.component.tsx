@@ -17,7 +17,9 @@ import { useEmployeeColumn } from "./employees/employee-column.component";
 import { Badge } from "./ui/badge";
 import { useEmployee } from "@/hooks/employee.hook";
 import { EmployeeForm } from "@/components/employees/employee-form.component";
+import { EmployeeViewDetail } from "@/components/employees/employee-view-detail.component";
 import { UpdateMode } from "@/models/update-mode.enum";
+import { IEmployee } from "@/models/employee.model";
 
 export function EmployeeTable() {
   const [filterName, setFilterName] = React.useState("");
@@ -25,8 +27,25 @@ export function EmployeeTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [isEmployeeFormOpen, setIsEmployeeFormOpen] = useState(false);
-  const { employeeColumns } = useEmployeeColumn();
-  const { employees, setUpdateMode } = useEmployee();
+  const [isEmployeeViewOpen, setIsEmployeeViewOpen] = useState(false);
+  const [selectedEmployeeForView, setSelectedEmployeeForView] = useState<IEmployee | null>(null);
+  const { employees, setUpdateMode, setSelectedEmployee } = useEmployee();
+  
+  const handleEdit = (employee: IEmployee) => {
+    setSelectedEmployee(employee);
+    setUpdateMode(UpdateMode.EDIT);
+    setIsEmployeeFormOpen(true);
+  };
+
+  const handleView = (employee: IEmployee) => {
+    setSelectedEmployeeForView(employee);
+    setIsEmployeeViewOpen(true);
+  };
+
+  const { employeeColumns } = useEmployeeColumn({
+    onEdit: handleEdit,
+    onView: handleView,
+  });
   // Filter employees
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
@@ -446,7 +465,19 @@ export function EmployeeTable() {
       {/* Employee Form Modal */}
       <EmployeeForm
         open={isEmployeeFormOpen}
-        onOpenChange={setIsEmployeeFormOpen}
+        onOpenChange={(open) => {
+          setIsEmployeeFormOpen(open);
+          if (!open) {
+            setUpdateMode(UpdateMode.NONE);
+          }
+        }}
+      />
+
+      {/* Employee View Detail Modal */}
+      <EmployeeViewDetail
+        open={isEmployeeViewOpen}
+        onOpenChange={setIsEmployeeViewOpen}
+        employee={selectedEmployeeForView}
       />
     </div>
   );

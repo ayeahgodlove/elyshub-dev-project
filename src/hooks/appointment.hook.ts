@@ -5,6 +5,7 @@ import {
   setAppointmentUpdateMode,
   addAppointment as addAppointmentAction,
   updateAppointment as updateAppointmentAction,
+  deleteAppointment as deleteAppointmentAction,
 } from "@/store/slice/appointment.slice";
 import { RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,6 +41,10 @@ export const useAppointment = () => {
     dispatch(updateAppointmentAction(appointmentData));
   };
 
+  const deleteAppointment = async (appointmentId: string) => {
+    dispatch(deleteAppointmentAction(appointmentId));
+  };
+
   return {
     appointments,
     appointment,
@@ -49,5 +54,6 @@ export const useAppointment = () => {
     setUpdateMode,
     addAppointment,
     editAppointment,
+    deleteAppointment,
   };
 };

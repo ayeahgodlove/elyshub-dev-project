@@ -41,6 +41,10 @@ export const useEmployee = () => {
     dispatch(updateEmployeeAction(employeeData));
   };
 
+  const deleteEmployee = async (employeeId: string) => {
+    dispatch(deleteEmployeeAction(employeeId));
+  };
+
   return {
     employees,
     employee,
@@ -50,5 +54,6 @@ export const useEmployee = () => {
     setUpdateMode,
     addEmployee,
     editEmployee,
+    deleteEmployee,
   };
 };

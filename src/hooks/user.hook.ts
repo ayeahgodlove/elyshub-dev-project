@@ -1,21 +1,15 @@
 import { IUser } from "@/models/user.model";
 import { UpdateMode } from "@/models/update-mode.enum";
-import {
-  setUser,
-} from "@/store/slice/user.slice";
+import { setUser } from "@/store/slice/user.slice";
 import { RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useUser = () => {
-  const users = useSelector(
-    (state: RootState) => state.users.users
-  );
+  const users = useSelector((state: RootState) => state.users.users);
   const isLoading = useSelector<RootState, boolean>(
     (state) => state.users.isLoading
   );
-  const user = useSelector<RootState, IUser>(
-    (state) => state.users.user
-  );
+  const user = useSelector<RootState, IUser>((state) => state.users.user);
   const updateMode = useSelector<RootState, UpdateMode>(
     (state) => state.users.updateMode
   );
@@ -25,10 +19,12 @@ export const useUser = () => {
     dispatch(setUser(user));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addUser = async (_userData: IUser) => {
     // TODO: Implement add user
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const editUser = async (_userData: IUser) => {
     // TODO: Implement edit user
   };

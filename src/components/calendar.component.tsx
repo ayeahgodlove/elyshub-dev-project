@@ -34,8 +34,29 @@ import { Badge } from "@/components/ui/badge";
 import { useAppointment } from "@/hooks/appointment.hook";
 import { useEmployee } from "@/hooks/employee.hook";
 import { AppointmentForm } from "@/components/appointments/appointment-form.component";
+import { AppointmentViewDetail } from "@/components/appointments/appointment-view-detail.component";
 import { IEmployee } from "@/models/employee.model";
+import { IAppointment } from "@/models/appointment.model";
 import { UpdateMode } from "@/models/update-mode.enum";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { MoreVertical } from "lucide-react";
+import { toast } from "sonner";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTHS = [
@@ -65,9 +86,38 @@ export function DashboardCalendar() {
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [isAppointmentFormOpen, setIsAppointmentFormOpen] = useState(false);
+  const [isAppointmentViewOpen, setIsAppointmentViewOpen] = useState(false);
+  const [selectedAppointmentForView, setSelectedAppointmentForView] = useState<IAppointment | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<IAppointment | null>(null);
 
-  const { appointments, setUpdateMode } = useAppointment();
+  const { appointments, setUpdateMode, setSelectedAppointment, deleteAppointment } = useAppointment();
   const { employees } = useEmployee();
+
+  const handleEditAppointment = (appointment: IAppointment) => {
+    setSelectedAppointment(appointment);
+    setUpdateMode(UpdateMode.EDIT);
+    setIsAppointmentFormOpen(true);
+  };
+
+  const handleViewAppointment = (appointment: IAppointment) => {
+    setSelectedAppointmentForView(appointment);
+    setIsAppointmentViewOpen(true);
+  };
+
+  const handleDeleteClick = (appointment: IAppointment) => {
+    setAppointmentToDelete(appointment);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (appointmentToDelete) {
+      deleteAppointment(appointmentToDelete.id);
+      toast.success("Appointment deleted successfully!");
+      setDeleteDialogOpen(false);
+      setAppointmentToDelete(null);
+    }
+  };
 
   const departments = useMemo(() => {
     const depts = new Set(employees.map((emp) => emp.department));
@@ -595,15 +645,51 @@ export function DashboardCalendar() {
                                 <div
                                   key={apt.id}
                                   className={cn(
-                                    "rounded-md p-2 cursor-pointer hover:shadow-md transition-shadow group",
+                                    "rounded-md p-2 cursor-pointer hover:shadow-md transition-shadow group relative",
                                     colorClasses[
                                       apt.color as keyof typeof colorClasses
                                     ] || apt.color
                                   )}
                                   title={`${apt.title}\n${apt.description}`}
                                 >
-                                  <div className="font-medium text-xs truncate">
-                                    {apt.title}
+                                  <div className="flex items-start justify-between gap-1">
+                                    <div className="font-medium text-xs truncate flex-1">
+                                      {apt.title}
+                                    </div>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                        <button
+                                          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-black/10 transition-opacity"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <MoreVertical className="w-3 h-3" />
+                                        </button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                        <DropdownMenuItem onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleViewAppointment(apt);
+                                        }}>
+                                          View details
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleEditAppointment(apt);
+                                        }}>
+                                          Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteClick(apt);
+                                          }}
+                                          className="text-red-600"
+                                        >
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
                                   </div>
                                   <div className="flex items-center gap-1 mt-1">
                                     <Clock className="w-3 h-3 opacity-70" />
@@ -722,8 +808,42 @@ export function DashboardCalendar() {
       {/* Appointment Form Modal */}
       <AppointmentForm
         open={isAppointmentFormOpen}
-        onOpenChange={setIsAppointmentFormOpen}
+        onOpenChange={(open) => {
+          setIsAppointmentFormOpen(open);
+          if (!open) {
+            setUpdateMode(UpdateMode.NONE);
+          }
+        }}
       />
+
+      {/* Appointment View Detail Modal */}
+      <AppointmentViewDetail
+        open={isAppointmentViewOpen}
+        onOpenChange={setIsAppointmentViewOpen}
+        appointment={selectedAppointmentForView}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete{" "}
+              {appointmentToDelete?.title || "this appointment"}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
