@@ -257,7 +257,7 @@ export function AppointmentForm({ open, onOpenChange }: AppointmentFormProps) {
             <FormField
               control={form.control}
               name="participants"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Participants *</FormLabel>
                   <div className="border rounded-md p-3 max-h-40 overflow-y-auto">

@@ -25,7 +25,6 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { Button } from '../ui/button';
 import { useEmployee } from "@/hooks/employee.hook";
-import { UpdateMode } from "@/models/update-mode.enum";
 import { toast } from "sonner";
 
 interface UseEmployeeColumnProps {
